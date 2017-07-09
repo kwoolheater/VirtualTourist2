@@ -7,3 +7,15 @@
 //
 
 import Foundation
+class SavedItems: NSObject {
+    
+    var imageArray = [Data]()
+    var imageURLArray = [String]()
+    
+    class func sharedInstance() -> SavedItems {
+        struct Singleton {
+            static var sharedInstance = SavedItems()
+        }
+        return Singleton.sharedInstance
+    }
+}
