@@ -52,6 +52,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             print("Error while trying to perform a search: \n\(error)\n\(fetchedResultsController)")
         }
         
+        smallMap.delegate = self
+        smallMap.addAnnotation(annotation!)
+        smallMap.centerCoordinate = (annotation?.coordinate)!
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
         let fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
         for image in fetchedObjects {
             print(image.imageData)
@@ -63,11 +69,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             self.collectionView.reloadData()
         }
         
-        smallMap.delegate = self
-        smallMap.addAnnotation(annotation!)
-        smallMap.centerCoordinate = (annotation?.coordinate)!
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        
     }
     
     func loadImages() {
