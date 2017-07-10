@@ -60,7 +60,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         let fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
         for image in fetchedObjects {
-            print(image.imageData)
+            print(image.imageData!)
         }
         if fetchedObjects.count == 0  {
             loadImages()
@@ -68,8 +68,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         } else {
             self.collectionView.reloadData()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
         
-        
+        collectionView.reloadData()
     }
     
     func loadImages() {
@@ -96,7 +100,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             if let imageData = try? Data(contentsOf: imageURLString!) {
                 let picture = UIImage(data: imageData)
                 let data = UIImageJPEGRepresentation(picture!, 1)
-                let image = Image(pin: pin!, imageData: data as! NSData, context: self.stack.context)
+                _ = Image(pin: pin!, imageData: data! as NSData, context: self.stack.context)
                 //let image = Images(imageData: imageData as NSData, context: stack.context)
                 SavedItems.sharedInstance().imageArray.append(imageData)
                 self.imageURLs.append(imageData)
@@ -121,9 +125,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PhotoAlbumViewCell
         
-        let photosToLoad = fetchedResultsController.object(at: indexPath) as! Image
+        let photosToLoad: Image? = fetchedResultsController.object(at: indexPath) as! Image
         
-        if photosToLoad.imageData == nil {
+        if photosToLoad?.imageData == nil {
             imageURLs = SavedItems.sharedInstance().imageArray
             let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
             
@@ -133,7 +137,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             }
         } else {
             DispatchQueue.main.async {
-                cell.imageView.image = UIImage(data: photosToLoad.imageData as! Data)
+                cell.imageView.image = UIImage(data: photosToLoad?.imageData! as! Data)
             }
         }
         return cell
