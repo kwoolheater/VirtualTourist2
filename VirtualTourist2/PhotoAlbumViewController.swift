@@ -16,6 +16,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var pin: Pin?
     var annotation: MKPointAnnotation? = nil
     var imageURLs = [Data]()
+    var database: Bool?
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         
@@ -60,9 +61,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         collectionView.dataSource = self
         
         fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
-        for image in fetchedObjects! {
-            print(image.imageData!)
-        }
+        
         if fetchedObjects?.count == 0  {
             loadImages()
             self.collectionView.reloadData()
@@ -79,19 +78,18 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func loadImages() {
         SavedItems.sharedInstance().imageArray.removeAll()
-        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude
-            )!) { (success, photo, error) in
-                // Handle no photos at this location
-                if success {
-                    if photo {
-                        self.label.text = "There are no photos at this location."
-                    } else {
-                        self.loadImageData(SavedItems.sharedInstance().imageURLArray)
-                        self.collectionView.reloadData()
-                    }
+        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!) { (success, photo, error) in
+            // Handle no photos at this location
+            if success {
+                if photo {
+                    self.label.text = "There are no photos at this location."
                 } else {
-                    print(error?.userInfo as Any)
+                    self.loadImageData(SavedItems.sharedInstance().imageURLArray)
+                    self.collectionView.reloadData()
                 }
+            } else {
+                print(error?.userInfo as Any)
+            }
         }
     }
     
@@ -132,12 +130,16 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PhotoAlbumViewCell
         
+        cell.activityIndicator.hidesWhenStopped = true
+        cell.activityIndicator.startAnimating()
+        
         if fetchedObjects?.count != 0 {
             let imageData = fetchedObjects?[(indexPath as NSIndexPath).row]
             DispatchQueue.main.async {
                 cell.imageView.image = UIImage(data: imageData?.imageData as! Data)
-                print(imageData?.imageData!)
+                cell.activityIndicator.stopAnimating()
             }
+            database = true
         } else {
             imageURLs = SavedItems.sharedInstance().imageArray
             let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
@@ -145,7 +147,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             // Set the name and image
             DispatchQueue.main.async {
                 cell.imageView.image = UIImage(data: imageData)
+                cell.activityIndicator.stopAnimating()
             }
+            database = false
         }
         return cell
         
@@ -153,6 +157,24 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {
         
+        let object = fetchedObjects?[indexPath.row]
         
+        if database! {
+            stack.context.delete(object!)
+            do {
+                try stack.context.save()
+            } catch {
+                print("error saving")
+            }
+        } else {
+            imageURLs.remove(at: indexPath.row)
+            stack.context.delete(object!)
+            do {
+                try stack.context.save()
+            } catch {
+                print("error saving")
+            }
+        }
     }
 }
+
