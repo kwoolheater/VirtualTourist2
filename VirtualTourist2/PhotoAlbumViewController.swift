@@ -32,6 +32,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     }()
     
     let stack = (UIApplication.shared.delegate as! AppDelegate).stack
+    var fetchedObjects: [Image]?
     
     @IBOutlet weak var smallMap: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -58,11 +59,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        let fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
-        for image in fetchedObjects {
+        fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
+        for image in fetchedObjects! {
             print(image.imageData!)
         }
-        if fetchedObjects.count == 0  {
+        if fetchedObjects?.count == 0  {
             loadImages()
             self.collectionView.reloadData()
         } else {
@@ -118,26 +119,32 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.imageURLs.count
+        
+        if fetchedObjects?.count == 0 {
+            return self.imageURLs.count
+        } else {
+            return (self.fetchedObjects?.count)!
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PhotoAlbumViewCell
         
-        let photosToLoad: Image? = fetchedResultsController.object(at: indexPath) as! Image
-        
-        if photosToLoad?.imageData == nil {
+        if fetchedObjects?.count != 0 {
+            let imageData = fetchedObjects?[(indexPath as NSIndexPath).row]
+            DispatchQueue.main.async {
+                cell.imageView.image = UIImage(data: imageData?.imageData as! Data)
+                print(imageData?.imageData!)
+            }
+        } else {
             imageURLs = SavedItems.sharedInstance().imageArray
             let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
             
             // Set the name and image
             DispatchQueue.main.async {
                 cell.imageView.image = UIImage(data: imageData)
-            }
-        } else {
-            DispatchQueue.main.async {
-                cell.imageView.image = UIImage(data: photosToLoad?.imageData! as! Data)
             }
         }
         return cell
