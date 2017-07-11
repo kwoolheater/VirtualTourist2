@@ -17,6 +17,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var annotation: MKPointAnnotation? = nil
     var imageURLs = [Data]()
     var database: Bool?
+    var insertedIndexPaths: [IndexPath]!
+    var deletedIndexPaths: [IndexPath]!
+    var updatedIndexPaths: [IndexPath]!
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         
@@ -64,6 +67,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         if fetchedObjects?.count == 0  {
             loadImages()
+            
             self.collectionView.reloadData()
         } else {
             self.collectionView.reloadData()
@@ -160,12 +164,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let object = fetchedObjects?[indexPath.row]
         
         if database! {
+            fetchedObjects?.remove(at: indexPath.row)
             stack.context.delete(object!)
             do {
                 try stack.context.save()
             } catch {
                 print("error saving")
             }
+            collectionView.reloadData()
         } else {
             imageURLs.remove(at: indexPath.row)
             stack.context.delete(object!)
@@ -174,7 +180,67 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             } catch {
                 print("error saving")
             }
+            collectionView.reloadData()
         }
     }
 }
 
+extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
+    
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        
+        insertedIndexPaths = [IndexPath]()
+        deletedIndexPaths = [IndexPath]()
+        updatedIndexPaths = [IndexPath]()
+    }
+    
+    // https://www.youtube.com/watch?v=0JJJ2WGpw_I (13:50-15:00)
+    // This method is only called when anything in the context has been added or deleted. It collects the indexPaths that have changed. Then, in controllerDidChangeContent, the changes are applied to the UI.
+    // The indexPath value is nil for insertions, and the newIndexPath value is nil for deletions.
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        
+        switch type {
+            
+        case .insert:
+            insertedIndexPaths.append(newIndexPath!)
+            print("Inserted a new index path")
+            break
+            
+        case .delete:
+            deletedIndexPaths.append(indexPath!)
+            print("Deleted an index path")
+            break
+            
+        case .update:
+            updatedIndexPaths.append(indexPath!)
+            print("Updated an index path")
+            break
+            
+        default:
+            break
+        }
+    }
+    
+    // https://www.youtube.com/watch?v=0JJJ2WGpw_I (18:15)
+    // Updates the UI so that it syncs up with Core Data. This method doesn't change anything in Core Data.
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        
+        collectionView.performBatchUpdates({
+            
+            for indexPath in self.insertedIndexPaths{
+                self.collectionView.insertItems(at: [indexPath as IndexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths{
+                self.collectionView.deleteItems(at: [indexPath as IndexPath])
+            }
+            
+            for indexPath in self.updatedIndexPaths{
+                self.collectionView.reloadItems(at: [indexPath as IndexPath])
+            }
+            
+        }, completion: nil)
+        
+    }
+    
+}
