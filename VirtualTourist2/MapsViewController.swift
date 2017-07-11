@@ -26,9 +26,23 @@ class MapsViewController: CoreDataViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         map.delegate = self
+        if let longitude = UserDefaults.standard.object(forKey: "longitude") as? CLLocationDegrees, let latitude = UserDefaults.standard.object(forKey: "latitude") as? CLLocationDegrees, let longitudeSpan = UserDefaults.standard.object(forKey: "longitudeSpan") as? CLLocationDegrees, let latitudeSpan = UserDefaults.standard.object(forKey: "latitudeSpan") as? CLLocationDegrees {
+            map.region.center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            map.region.span = MKCoordinateSpan(latitudeDelta: latitudeSpan, longitudeDelta: longitudeSpan)
+        }
         
         loadPins()
         setUI()
+    }
+    
+    func saveMapView() {
+        let defaultManager = UserDefaults.standard
+        
+        defaultManager.set(map.region.center.longitude, forKey: "longitude")
+        defaultManager.set(map.region.center.latitude, forKey: "latitude")
+        defaultManager.set(map.region.span.longitudeDelta, forKey: "longitudeSpan")
+        defaultManager.set(map.region.span.latitudeDelta, forKey: "latitudeSpan")
     }
     
     func loadPins() {
@@ -81,6 +95,7 @@ class MapsViewController: CoreDataViewController, MKMapViewDelegate {
             }
         }
     }
+    
     // Adding in the Map Annotation View
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         // Add Map Annotation View
@@ -93,6 +108,11 @@ class MapsViewController: CoreDataViewController, MKMapViewDelegate {
             annotationView?.annotation = annotation
         }
         return annotationView
+    }
+    
+    // Save map view
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        saveMapView()
     }
     
     // Handle annotation selected, either delete or segue to next view

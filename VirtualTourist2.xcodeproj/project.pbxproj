@@ -13,8 +13,6 @@
 		4144DC281F110B8F0065B6E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4144DC261F110B8F0065B6E2 /* Main.storyboard */; };
 		4144DC2A1F110B8F0065B6E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4144DC291F110B8F0065B6E2 /* Assets.xcassets */; };
 		4144DC2D1F110B8F0065B6E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4144DC2B1F110B8F0065B6E2 /* LaunchScreen.storyboard */; };
-		4144DC381F110B8F0065B6E2 /* VirtualTourist2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4144DC371F110B8F0065B6E2 /* VirtualTourist2Tests.swift */; };
-		4144DC431F110B8F0065B6E2 /* VirtualTourist2UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4144DC421F110B8F0065B6E2 /* VirtualTourist2UITests.swift */; };
 		4144DC561F110C570065B6E2 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4144DC541F110C570065B6E2 /* Model.xcdatamodeld */; };
 		4144DC611F110E2D0065B6E2 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4144DC601F110E2D0065B6E2 /* CoreDataStack.swift */; };
 		4144DC661F110EB30065B6E2 /* Image+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4144DC621F110EB30065B6E2 /* Image+CoreDataClass.swift */; };
@@ -47,19 +45,15 @@
 
 /* Begin PBXFileReference section */
 		410238AD1F13D5F900EB2B7C /* PhotoAlbumViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewCell.swift; sourceTree = "<group>"; };
-		4144DC1F1F110B8F0065B6E2 /* VirtualTourist2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4144DC1F1F110B8F0065B6E2 /* VirtualTourist2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = VirtualTourist2.app; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2.app"; sourceTree = "<absolute>"; };
 		4144DC221F110B8F0065B6E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4144DC241F110B8F0065B6E2 /* MapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsViewController.swift; sourceTree = "<group>"; };
 		4144DC271F110B8F0065B6E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4144DC291F110B8F0065B6E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4144DC2C1F110B8F0065B6E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4144DC2E1F110B8F0065B6E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4144DC331F110B8F0065B6E2 /* VirtualTourist2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualTourist2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4144DC371F110B8F0065B6E2 /* VirtualTourist2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTourist2Tests.swift; sourceTree = "<group>"; };
-		4144DC391F110B8F0065B6E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4144DC3E1F110B8F0065B6E2 /* VirtualTourist2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualTourist2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4144DC421F110B8F0065B6E2 /* VirtualTourist2UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTourist2UITests.swift; sourceTree = "<group>"; };
-		4144DC441F110B8F0065B6E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4144DC331F110B8F0065B6E2 /* VirtualTourist2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2Tests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2Tests.xctest"; sourceTree = "<absolute>"; };
+		4144DC3E1F110B8F0065B6E2 /* VirtualTourist2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2UITests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2UITests.xctest"; sourceTree = "<absolute>"; };
 		4144DC551F110C570065B6E2 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		4144DC601F110E2D0065B6E2 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		4144DC621F110EB30065B6E2 /* Image+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -103,20 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				4144DC211F110B8F0065B6E2 /* VirtualTourist2 */,
-				4144DC361F110B8F0065B6E2 /* VirtualTourist2Tests */,
-				4144DC411F110B8F0065B6E2 /* VirtualTourist2UITests */,
-				4144DC201F110B8F0065B6E2 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		4144DC201F110B8F0065B6E2 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4144DC1F1F110B8F0065B6E2 /* VirtualTourist2.app */,
-				4144DC331F110B8F0065B6E2 /* VirtualTourist2Tests.xctest */,
-				4144DC3E1F110B8F0065B6E2 /* VirtualTourist2UITests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		4144DC211F110B8F0065B6E2 /* VirtualTourist2 */ = {
@@ -130,24 +111,6 @@
 				4144DC2E1F110B8F0065B6E2 /* Info.plist */,
 			);
 			path = VirtualTourist2;
-			sourceTree = "<group>";
-		};
-		4144DC361F110B8F0065B6E2 /* VirtualTourist2Tests */ = {
-			isa = PBXGroup;
-			children = (
-				4144DC371F110B8F0065B6E2 /* VirtualTourist2Tests.swift */,
-				4144DC391F110B8F0065B6E2 /* Info.plist */,
-			);
-			path = VirtualTourist2Tests;
-			sourceTree = "<group>";
-		};
-		4144DC411F110B8F0065B6E2 /* VirtualTourist2UITests */ = {
-			isa = PBXGroup;
-			children = (
-				4144DC421F110B8F0065B6E2 /* VirtualTourist2UITests.swift */,
-				4144DC441F110B8F0065B6E2 /* Info.plist */,
-			);
-			path = VirtualTourist2UITests;
 			sourceTree = "<group>";
 		};
 		4144DC501F110BC80065B6E2 /* Model */ = {
@@ -288,7 +251,7 @@
 				Base,
 			);
 			mainGroup = 4144DC161F110B8F0065B6E2;
-			productRefGroup = 4144DC201F110B8F0065B6E2 /* Products */;
+			productRefGroup = 4144DC161F110B8F0065B6E2;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -352,7 +315,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4144DC381F110B8F0065B6E2 /* VirtualTourist2Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,7 +322,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4144DC431F110B8F0065B6E2 /* VirtualTourist2UITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
