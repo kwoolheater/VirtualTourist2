@@ -50,6 +50,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         SavedItems.sharedInstance().imageArray.removeAll()
         SavedItems.sharedInstance().imageURLArray.removeAll()
         
+        // add bar button item
+        let barButton = UIBarButtonItem(title: "New Collection", style: .plain, target: self, action: #selector(newCollection))
+        self.navigationItem.rightBarButtonItem = barButton
+        
         // Check if this pin has photos stored in Core Data.
         do {
             try fetchedResultsController.performFetch()
@@ -72,12 +76,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         } else {
             self.collectionView.reloadData()
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        
-        collectionView.reloadData()
     }
     
     func loadImages() {
@@ -120,6 +118,16 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         self.collectionView.reloadData()
     }
     
+    func newCollection() {
+        fetchedObjects?.removeAll()
+        imageURLs.removeAll()
+        
+        collectionView.reloadData()
+        
+        loadImages()
+        collectionView.reloadData()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if fetchedObjects?.count == 0 {
@@ -133,7 +141,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! PhotoAlbumViewCell
-        
+        cell.backgroundColor = UIColor.gray
         cell.activityIndicator.hidesWhenStopped = true
         cell.activityIndicator.startAnimating()
         
