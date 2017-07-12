@@ -11,7 +11,64 @@ class Client: NSObject {
     
     let session = URLSession.shared
     
-    func getImageFromFlickr(long: Double, lat: Double, completionHandlerForGetImage: @escaping(_ success: Bool,_ photo: Bool ,_ error: NSError?) -> Void) -> URLSessionDataTask {
+    func getNumberOfPages(urlString: String, completionHandler: @escaping (_ pages: Int?, _ error: NSError?) -> Void) -> URLSessionDataTask {
+        let parameters: [String:AnyObject] = [:]
+        let url: URL = URL(string: urlString + escapedParameters(parameters))!
+        
+        let request = NSMutableURLRequest(url: url )
+        request.httpMethod = "GET"
+        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
+            // helper function
+            func sendError(error: String) {
+                let userInfo = [NSLocalizedDescriptionKey : error]
+                completionHandler(nil, NSError(domain: "taskForGETMethod", code: 1, userInfo: userInfo))
+            }
+        
+            /* GUARD: Was there an error? */
+            guard error == nil else {
+                sendError(error: "There was an error with your request: \(error)")
+                return
+            }
+            
+            /* GUARD: Did we get a successful 2xx response? */
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode , statusCode >= 200 && statusCode <= 299 else {
+                sendError(error: "Your request returned a status code other than 2xx!")
+                return
+            }
+            
+            /* GUARD: Was there any data returned? */
+            guard let data = data else {
+                sendError(error: "No data was returned by the request!")
+                return
+            }
+            
+            let parsedResult: AnyObject!
+            
+            do {
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
+                
+            } catch let error as NSError {
+                completionHandler(nil, error)
+                return
+            }
+            
+            if let photosDictionary = parsedResult["photos"] as? [String: AnyObject] {
+                if let pageCount = photosDictionary["pages"] {
+                    completionHandler(pageCount as! Int, nil)
+                    return
+                }
+            }
+        
+            print("There was an error")
+            completionHandler(0, nil)
+            return
+            
+        }
+        task.resume()
+        return task
+    }
+    
+    func getImageFromFlickr(long: Double, lat: Double, page: Int, completionHandlerForGetImage: @escaping(_ success: Bool,_ photo: Bool ,_ pages: Int ,_ error: NSError?) -> Void) -> URLSessionDataTask {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.LocationPhotosMethod,
@@ -22,13 +79,16 @@ class Client: NSObject {
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
             Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
-            Constants.FlickrParameterKeys.Pages: Constants.FlickrParameterValues.Pages
+            Constants.FlickrParameterKeys.Pages: Constants.FlickrParameterValues.Pages,
+            Constants.FlickrParameterKeys.Page: page
             ] as [String : Any]
         
         // create url and request
         let urlString = Constants.Flickr.APIBaseURL + escapedParameters(methodParameters as [String:AnyObject])
+        
         let url = URL(string: urlString)!
         let request = URLRequest(url: url)
+        print(url)
         
         // create network request
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -37,7 +97,7 @@ class Client: NSObject {
             func displayError(_ error: String) {
                 print("URL at time of error: \(url)")
                 let userInfo = [NSLocalizedDescriptionKey : error]
-                completionHandlerForGetImage(false, false,NSError(domain: "taskError", code: 1, userInfo: userInfo))
+                completionHandlerForGetImage(false, false, 0, NSError(domain: "taskError", code: 1, userInfo: userInfo))
             }
             
             /* GUARD: Was there an error? */
@@ -67,7 +127,7 @@ class Client: NSObject {
                 displayError("Could not parse the data as JSON: '\(data)'")
                 return
             }
-            
+            print(parsedResult)
             /* GUARD: Did Flickr return an error (stat != ok)? */
             guard let stat = parsedResult[Constants.FlickrResponseKeys.Status] as? String, stat == Constants.FlickrResponseValues.OKStatus else {
                 displayError("Flickr API returned an error. See error code and message in \(parsedResult)")
@@ -81,7 +141,7 @@ class Client: NSObject {
             }
             
             if numberOfPages == 0 {
-                completionHandlerForGetImage(true, true, nil)
+                completionHandlerForGetImage(true, true, numberOfPages, nil)
             }
             
             var imageArray = [String]()
@@ -100,7 +160,7 @@ class Client: NSObject {
                 SavedItems.sharedInstance().imageURLArray.append(value)
             }
             
-            completionHandlerForGetImage(true, false, nil)
+            completionHandlerForGetImage(true, false, numberOfPages, nil)
         }
         
         // start the task!

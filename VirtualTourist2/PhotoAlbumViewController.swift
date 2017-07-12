@@ -17,6 +17,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var annotation: MKPointAnnotation? = nil
     var imageURLs = [Data]()
     var database: Bool?
+    var numberOfPages: Int?
     var insertedIndexPaths: [IndexPath]!
     var deletedIndexPaths: [IndexPath]!
     var updatedIndexPaths: [IndexPath]!
@@ -70,23 +71,23 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
         
         if fetchedObjects?.count == 0  {
-            loadImages()
-            
+            loadImages(pageNumber: 1)
             self.collectionView.reloadData()
         } else {
             self.collectionView.reloadData()
         }
     }
     
-    func loadImages() {
+    func loadImages(pageNumber: Int) {
         SavedItems.sharedInstance().imageArray.removeAll()
-        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!) { (success, photo, error) in
+        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!, page: pageNumber) { (success, photo, pages, error) in
             // Handle no photos at this location
             if success {
                 if photo {
                     self.label.text = "There are no photos at this location."
                 } else {
                     DispatchQueue.main.async {
+                        self.numberOfPages = pages
                         self.collectionView.reloadData()
                     }
                 }
@@ -147,15 +148,18 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         fetchedObjects?.removeAll()
         imageURLs.removeAll()
         
-        for object in fetchedObjects!{
-            stack.context.delete(object)
-        }
+        self.stack.context.performAndWait({
+            self.pin?.removeFromImage((self.pin?.image)!)
+        })
         
         collectionView.reloadData()
         
-        loadImages()
+        
+        loadImages(pageNumber: 2)
         collectionView.reloadData()
     }
+    
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
