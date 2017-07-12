@@ -33,7 +33,7 @@ struct Constants {
         static let ResponseFormat = "json"
         static let DisableJSONCallback = "1" /* 1 means "yes" */
         static let NumPhotos = "18"
-        static let Pages = "1"
+        static let Pages = "100"
         static let LocationPhotosMethod = "flickr.photos.search"
         static let MediumURL = "url_m"
     }

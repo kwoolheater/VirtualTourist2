@@ -78,7 +78,7 @@ class MapsViewController: CoreDataViewController, MKMapViewDelegate {
     func action(gestureRecognizer:UIGestureRecognizer){
         // If in delete mode, no adding pins!
         if deleteMode { return } else {
-            if gestureRecognizer.state == .ended {
+            if gestureRecognizer.state == .began {
                 let touchPoint = gestureRecognizer.location(in: map)
                 let newCoordinates = map.convert(touchPoint, toCoordinateFrom: map)
                 let annotation = MKPointAnnotation()

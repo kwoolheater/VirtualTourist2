@@ -45,15 +45,15 @@
 
 /* Begin PBXFileReference section */
 		410238AD1F13D5F900EB2B7C /* PhotoAlbumViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewCell.swift; sourceTree = "<group>"; };
-		4144DC1F1F110B8F0065B6E2 /* VirtualTourist2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = VirtualTourist2.app; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2.app"; sourceTree = "<absolute>"; };
+		410238AF1F15C5B300EB2B7C /* VirtualTourist2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = VirtualTourist2.app; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2.app"; sourceTree = "<absolute>"; };
+		410238B01F15C5B300EB2B7C /* VirtualTourist2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2Tests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2Tests.xctest"; sourceTree = "<absolute>"; };
+		410238B11F15C5B300EB2B7C /* VirtualTourist2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2UITests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2UITests.xctest"; sourceTree = "<absolute>"; };
 		4144DC221F110B8F0065B6E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4144DC241F110B8F0065B6E2 /* MapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsViewController.swift; sourceTree = "<group>"; };
 		4144DC271F110B8F0065B6E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4144DC291F110B8F0065B6E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4144DC2C1F110B8F0065B6E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4144DC2E1F110B8F0065B6E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4144DC331F110B8F0065B6E2 /* VirtualTourist2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2Tests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2Tests.xctest"; sourceTree = "<absolute>"; };
-		4144DC3E1F110B8F0065B6E2 /* VirtualTourist2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = VirtualTourist2UITests.xctest; path = "/Users/Kiyoshi/VirtualTourist2/build/Debug-iphoneos/VirtualTourist2UITests.xctest"; sourceTree = "<absolute>"; };
 		4144DC551F110C570065B6E2 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		4144DC601F110E2D0065B6E2 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		4144DC621F110EB30065B6E2 /* Image+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 			);
 			name = VirtualTourist2;
 			productName = VirtualTourist2;
-			productReference = 4144DC1F1F110B8F0065B6E2 /* VirtualTourist2.app */;
+			productReference = 410238AF1F15C5B300EB2B7C /* VirtualTourist2.app */;
 			productType = "com.apple.product-type.application";
 		};
 		4144DC321F110B8F0065B6E2 /* VirtualTourist2Tests */ = {
@@ -192,7 +192,7 @@
 			);
 			name = VirtualTourist2Tests;
 			productName = VirtualTourist2Tests;
-			productReference = 4144DC331F110B8F0065B6E2 /* VirtualTourist2Tests.xctest */;
+			productReference = 410238B01F15C5B300EB2B7C /* VirtualTourist2Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		4144DC3D1F110B8F0065B6E2 /* VirtualTourist2UITests */ = {
@@ -210,7 +210,7 @@
 			);
 			name = VirtualTourist2UITests;
 			productName = VirtualTourist2UITests;
-			productReference = 4144DC3E1F110B8F0065B6E2 /* VirtualTourist2UITests.xctest */;
+			productReference = 410238B11F15C5B300EB2B7C /* VirtualTourist2UITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */

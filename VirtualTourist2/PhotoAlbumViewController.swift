@@ -86,13 +86,38 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 if photo {
                     self.label.text = "There are no photos at this location."
                 } else {
-                    self.loadImageData(SavedItems.sharedInstance().imageURLArray)
-                    self.collectionView.reloadData()
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
                 }
             } else {
                 print(error?.userInfo as Any)
             }
         }
+    }
+    
+    func downloadImage(imagePath: String, completionHandler: @escaping (_ imageData: Data?, _ errorString: String?) -> Void){
+        let session = URLSession.shared
+        let imgURL = NSURL(string: imagePath)
+        let request: NSURLRequest = NSURLRequest(url: imgURL! as URL)
+        
+        let task = session.dataTask(with: request as URLRequest) { data, response, downloadError in
+        
+            if downloadError != nil {
+                completionHandler(nil, "Could not download image \(imagePath)")
+            } else {
+                SavedItems.sharedInstance().imageArray.append(data!)
+                _ = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
+                do {
+                    try self.stack.context.save()
+                } catch {
+                    print("error saving images in data")
+                }
+                completionHandler(data, nil)
+            }
+        }
+        task.resume()
+
     }
     
     func loadImageData(_ imageURLs: [String]) {
@@ -122,6 +147,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         fetchedObjects?.removeAll()
         imageURLs.removeAll()
         
+        for object in fetchedObjects!{
+            stack.context.delete(object)
+        }
+        
         collectionView.reloadData()
         
         loadImages()
@@ -131,7 +160,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if fetchedObjects?.count == 0 {
-            return self.imageURLs.count
+            return SavedItems.sharedInstance().imageURLArray.count
         } else {
             return (self.fetchedObjects?.count)!
         }
@@ -153,14 +182,25 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             }
             database = true
         } else {
-            imageURLs = SavedItems.sharedInstance().imageArray
-            let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
+            cell.imageView.image = UIImage(named: "PlaceHolder")
+            
+            let imagePath = SavedItems.sharedInstance().imageURLArray[indexPath.row]
+            downloadImage(imagePath: imagePath) { data, error in
+                if error != nil {
+                    print(error)
+                } else {
+                    DispatchQueue.main.async {
+                        cell.imageView.image = UIImage(data: data!)
+                        cell.activityIndicator.stopAnimating()
+                    }
+                }
+            }
+            
+//            imageURLs = SavedItems.sharedInstance().imageArray
+//            let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
             
             // Set the name and image
-            DispatchQueue.main.async {
-                cell.imageView.image = UIImage(data: imageData)
-                cell.activityIndicator.stopAnimating()
-            }
+            
             database = false
         }
         return cell
