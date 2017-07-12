@@ -88,7 +88,6 @@ class Client: NSObject {
         
         let url = URL(string: urlString)!
         let request = URLRequest(url: url)
-        print(url)
         
         // create network request
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -127,7 +126,7 @@ class Client: NSObject {
                 displayError("Could not parse the data as JSON: '\(data)'")
                 return
             }
-            print(parsedResult)
+            
             /* GUARD: Did Flickr return an error (stat != ok)? */
             guard let stat = parsedResult[Constants.FlickrResponseKeys.Status] as? String, stat == Constants.FlickrResponseValues.OKStatus else {
                 displayError("Flickr API returned an error. See error code and message in \(parsedResult)")

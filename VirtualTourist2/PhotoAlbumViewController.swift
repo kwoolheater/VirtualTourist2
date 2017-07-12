@@ -108,7 +108,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 completionHandler(nil, "Could not download image \(imagePath)")
             } else {
                 SavedItems.sharedInstance().imageArray.append(data!)
-                _ = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
+                let image = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
                 do {
                     try self.stack.context.save()
                 } catch {
@@ -145,15 +145,23 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     }
     
     func newCollection() {
+        
+        self.stack.context.performAndWait({
+            for object in self.fetchedObjects! {
+                self.stack.context.delete(object)
+            }
+            
+            do {
+                try self.stack.context.save()
+            } catch {
+                print("Error.")
+            }
+        })
+            
         fetchedObjects?.removeAll()
         imageURLs.removeAll()
         
-        self.stack.context.performAndWait({
-            self.pin?.removeFromImage((self.pin?.image)!)
-        })
-        
         collectionView.reloadData()
-        
         
         loadImages(pageNumber: 2)
         collectionView.reloadData()
@@ -225,7 +233,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             }
             collectionView.reloadData()
         } else {
-            imageURLs.remove(at: indexPath.row)
+            SavedItems.sharedInstance().imageURLArray.remove(at: indexPath.row)
             stack.context.delete(object!)
             do {
                 try stack.context.save()
