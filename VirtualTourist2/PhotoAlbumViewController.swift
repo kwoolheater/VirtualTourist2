@@ -16,6 +16,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var pin: Pin?
     var annotation: MKPointAnnotation? = nil
     var imageURLs = [Data]()
+    var imageObjectArray = [Image]()
     var database: Bool?
     var numberOfPages: Int?
     var insertedIndexPaths: [IndexPath]!
@@ -48,8 +49,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         // clear everything
         imageURLs.removeAll()
+        imageObjectArray.removeAll()
         SavedItems.sharedInstance().imageArray.removeAll()
         SavedItems.sharedInstance().imageURLArray.removeAll()
+        
         
         // add bar button item
         let barButton = UIBarButtonItem(title: "New Collection", style: .plain, target: self, action: #selector(newCollection))
@@ -62,12 +65,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             print("Error while trying to perform a search: \n\(error)\n\(fetchedResultsController)")
         }
         
+        //set delegates and add annotation to map
         smallMap.delegate = self
         smallMap.addAnnotation(annotation!)
         smallMap.centerCoordinate = (annotation?.coordinate)!
         collectionView.delegate = self
         collectionView.dataSource = self
         
+        //Fetch the objects and/or load the data
         fetchedObjects = fetchedResultsController.fetchedObjects as! [Image]
         
         if fetchedObjects?.count == 0  {
@@ -109,6 +114,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             } else {
                 SavedItems.sharedInstance().imageArray.append(data!)
                 let image = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
+                self.imageObjectArray.append(image)
+                
                 do {
                     try self.stack.context.save()
                 } catch {
@@ -157,9 +164,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 print("Error.")
             }
         })
-            
+        
         fetchedObjects?.removeAll()
         imageURLs.removeAll()
+        imageObjectArray.removeAll()
         
         collectionView.reloadData()
         
@@ -208,21 +216,23 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 }
             }
             
-//            imageURLs = SavedItems.sharedInstance().imageArray
-//            let imageData = self.imageURLs[(indexPath as NSIndexPath).row]
-            
-            // Set the name and image
-            
             database = false
+            
         }
+        
         return cell
         
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {
         
-        let object = fetchedObjects?[indexPath.row]
+        var object: Image?
         
+        if fetchedObjects?.count == 0 {
+            object = imageObjectArray[indexPath.row]
+        } else {
+            object = fetchedObjects?[indexPath.row]
+        }
         if database! {
             fetchedObjects?.remove(at: indexPath.row)
             stack.context.delete(object!)
