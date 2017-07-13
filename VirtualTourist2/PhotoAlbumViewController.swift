@@ -171,7 +171,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         collectionView.reloadData()
         
-        loadImages(pageNumber: 2)
+        loadImages(pageNumber: 3)
         collectionView.reloadData()
     }
     
