@@ -11,64 +11,7 @@ class Client: NSObject {
     
     let session = URLSession.shared
     
-    func getNumberOfPages(urlString: String, completionHandler: @escaping (_ pages: Int?, _ error: NSError?) -> Void) -> URLSessionDataTask {
-        let parameters: [String:AnyObject] = [:]
-        let url: URL = URL(string: urlString + escapedParameters(parameters))!
-        
-        let request = NSMutableURLRequest(url: url )
-        request.httpMethod = "GET"
-        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
-            // helper function
-            func sendError(error: String) {
-                let userInfo = [NSLocalizedDescriptionKey : error]
-                completionHandler(nil, NSError(domain: "taskForGETMethod", code: 1, userInfo: userInfo))
-            }
-        
-            /* GUARD: Was there an error? */
-            guard error == nil else {
-                sendError(error: "There was an error with your request: \(error)")
-                return
-            }
-            
-            /* GUARD: Did we get a successful 2xx response? */
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode , statusCode >= 200 && statusCode <= 299 else {
-                sendError(error: "Your request returned a status code other than 2xx!")
-                return
-            }
-            
-            /* GUARD: Was there any data returned? */
-            guard let data = data else {
-                sendError(error: "No data was returned by the request!")
-                return
-            }
-            
-            let parsedResult: AnyObject!
-            
-            do {
-                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
-                
-            } catch let error as NSError {
-                completionHandler(nil, error)
-                return
-            }
-            
-            if let photosDictionary = parsedResult["photos"] as? [String: AnyObject] {
-                if let pageCount = photosDictionary["pages"] {
-                    completionHandler(pageCount as! Int, nil)
-                    return
-                }
-            }
-        
-            print("There was an error")
-            completionHandler(0, nil)
-            return
-            
-        }
-        task.resume()
-        return task
-    }
-    
-    func getImageFromFlickr(long: Double, lat: Double, page: Int, completionHandlerForGetImage: @escaping(_ success: Bool,_ photo: Bool ,_ pages: Int ,_ error: NSError?) -> Void) -> URLSessionDataTask {
+    func getImageFromFlickr(long: Double, lat: Double, page: Int, completionHandlerForGetImage: @escaping(_ success: Bool, _ photo: Bool , _ url: [String]?,_ pages: Int ,_ error: NSError?) -> Void) -> URLSessionDataTask {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.LocationPhotosMethod,
@@ -96,7 +39,7 @@ class Client: NSObject {
             func displayError(_ error: String) {
                 print("URL at time of error: \(url)")
                 let userInfo = [NSLocalizedDescriptionKey : error]
-                completionHandlerForGetImage(false, false, 0, NSError(domain: "taskError", code: 1, userInfo: userInfo))
+                completionHandlerForGetImage(false, false, nil, 0, NSError(domain: "taskError", code: 1, userInfo: userInfo))
             }
             
             /* GUARD: Was there an error? */
@@ -140,7 +83,7 @@ class Client: NSObject {
             }
             
             if numberOfPages == 0 {
-                completionHandlerForGetImage(true, true, numberOfPages, nil)
+                completionHandlerForGetImage(true, true, nil, numberOfPages, nil)
             }
             
             var imageArray = [String]()
@@ -153,13 +96,15 @@ class Client: NSObject {
                 }
                 
                 imageArray.append(imageUrlString)
+                print(imageUrlString)
             }
             
             for value in imageArray {
                 SavedItems.sharedInstance().imageURLArray.append(value)
+                print(value)
             }
             
-            completionHandlerForGetImage(true, false, numberOfPages, nil)
+            completionHandlerForGetImage(true, false, imageArray, numberOfPages, nil)
         }
         
         // start the task!

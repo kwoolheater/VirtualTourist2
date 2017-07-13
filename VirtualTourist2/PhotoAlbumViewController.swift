@@ -18,10 +18,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var imageURLs = [Data]()
     var imageObjectArray = [Image]()
     var database: Bool?
-    var numberOfPages: Int?
-    var insertedIndexPaths: [IndexPath]!
-    var deletedIndexPaths: [IndexPath]!
-    var updatedIndexPaths: [IndexPath]!
+    let stack = (UIApplication.shared.delegate as! AppDelegate).stack
+    var fetchedObjects: [Image]?
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         
@@ -37,8 +35,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
     }()
     
-    let stack = (UIApplication.shared.delegate as! AppDelegate).stack
-    var fetchedObjects: [Image]?
+    
     
     @IBOutlet weak var smallMap: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -85,14 +82,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func loadImages(pageNumber: Int) {
         SavedItems.sharedInstance().imageArray.removeAll()
-        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!, page: pageNumber) { (success, photo, pages, error) in
+        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!, page: pageNumber) { (success, photo, array, pages, error) in
             // Handle no photos at this location
             if success {
                 if photo {
                     self.label.text = "There are no photos at this location."
                 } else {
                     DispatchQueue.main.async {
-                        self.numberOfPages = pages
                         self.collectionView.reloadData()
                     }
                 }
@@ -128,48 +124,50 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
 
     }
     
-    func loadImageData(_ imageURLs: [String]) {
-        for url in imageURLs {
-            let imageURLString = URL(string: url)
-            if let imageData = try? Data(contentsOf: imageURLString!) {
-                let picture = UIImage(data: imageData)
-                let data = UIImageJPEGRepresentation(picture!, 1)
-                _ = Image(pin: pin!, imageData: data! as NSData, context: self.stack.context)
-                //let image = Images(imageData: imageData as NSData, context: stack.context)
-                SavedItems.sharedInstance().imageArray.append(imageData)
-                self.imageURLs.append(imageData)
-                do {
-                    try stack.context.save()
-                } catch {
-                    print("error saving images in data")
-                }
-            } else {
-                print("Image does not exist at \(url)")
-            }
-        }
-        
-        self.collectionView.reloadData()
-    }
-    
     func newCollection() {
         
-        self.stack.context.performAndWait({
-            for object in self.fetchedObjects! {
-                self.stack.context.delete(object)
-            }
+        var object: [Image]
+        
+        if fetchedObjects?.count == 0 {
+            object = imageObjectArray
+        } else {
+            object = fetchedObjects!
+        }
+        self.stack.context.perform ({
             
-            do {
-                try self.stack.context.save()
-            } catch {
-                print("Error.")
+            for objects in object {
+                self.stack.context.delete(objects)
+                do {
+                    try self.stack.context.save()
+                } catch {
+                    print("error")
+                }
             }
+            self.fetchedObjects?.removeAll()
+            self.imageURLs.removeAll()
+            self.imageObjectArray.removeAll()
+            SavedItems.sharedInstance().imageURLArray.removeAll()
+            
         })
         
-        fetchedObjects?.removeAll()
-        imageURLs.removeAll()
-        imageObjectArray.removeAll()
+//        self.stack.context.perform({
+//            for object in self.fetchedObjects! {
+//                self.stack.context.delete(object)
+//            }
+//            
+//            do {
+//                try self.stack.context.save()
+//            } catch {
+//                print("Error.")
+//            }
+//            
+//            self.fetchedObjects?.removeAll()
+//            self.imageURLs.removeAll()
+//            self.imageObjectArray.removeAll()
+//            
+//            self.collectionView.reloadData()
+//        })
         
-        collectionView.reloadData()
         
         loadImages(pageNumber: 3)
         collectionView.reloadData()
@@ -193,12 +191,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         cell.backgroundColor = UIColor.gray
         cell.activityIndicator.hidesWhenStopped = true
         cell.activityIndicator.startAnimating()
+        cell.isUserInteractionEnabled = false
         
         if fetchedObjects?.count != 0 {
             let imageData = fetchedObjects?[(indexPath as NSIndexPath).row]
             DispatchQueue.main.async {
                 cell.imageView.image = UIImage(data: imageData?.imageData as! Data)
                 cell.activityIndicator.stopAnimating()
+                cell.isUserInteractionEnabled = true
             }
             database = true
         } else {
@@ -212,6 +212,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     DispatchQueue.main.async {
                         cell.imageView.image = UIImage(data: data!)
                         cell.activityIndicator.stopAnimating()
+                        cell.isUserInteractionEnabled = true
                     }
                 }
             }
@@ -252,65 +253,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             }
             collectionView.reloadData()
         }
-    }
-}
-
-extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
-    
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        
-        insertedIndexPaths = [IndexPath]()
-        deletedIndexPaths = [IndexPath]()
-        updatedIndexPaths = [IndexPath]()
-    }
-    
-    // https://www.youtube.com/watch?v=0JJJ2WGpw_I (13:50-15:00)
-    // This method is only called when anything in the context has been added or deleted. It collects the indexPaths that have changed. Then, in controllerDidChangeContent, the changes are applied to the UI.
-    // The indexPath value is nil for insertions, and the newIndexPath value is nil for deletions.
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        switch type {
-            
-        case .insert:
-            insertedIndexPaths.append(newIndexPath!)
-            print("Inserted a new index path")
-            break
-            
-        case .delete:
-            deletedIndexPaths.append(indexPath!)
-            print("Deleted an index path")
-            break
-            
-        case .update:
-            updatedIndexPaths.append(indexPath!)
-            print("Updated an index path")
-            break
-            
-        default:
-            break
-        }
-    }
-    
-    // https://www.youtube.com/watch?v=0JJJ2WGpw_I (18:15)
-    // Updates the UI so that it syncs up with Core Data. This method doesn't change anything in Core Data.
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        
-        collectionView.performBatchUpdates({
-            
-            for indexPath in self.insertedIndexPaths{
-                self.collectionView.insertItems(at: [indexPath as IndexPath])
-            }
-            
-            for indexPath in self.deletedIndexPaths{
-                self.collectionView.deleteItems(at: [indexPath as IndexPath])
-            }
-            
-            for indexPath in self.updatedIndexPaths{
-                self.collectionView.reloadItems(at: [indexPath as IndexPath])
-            }
-            
-        }, completion: nil)
-        
     }
     
 }
