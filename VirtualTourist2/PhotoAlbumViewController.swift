@@ -20,6 +20,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     var database: Bool?
     let stack = (UIApplication.shared.delegate as! AppDelegate).stack
     var fetchedObjects: [Image]?
+    var numberOfPages: Int?
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         
@@ -90,6 +91,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 } else {
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
+                        self.numberOfPages = pages
                     }
                 }
             } else {
@@ -136,6 +138,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         } else {
             object = fetchedObjects!
         }
+        
         DispatchQueue.main.async {
             
             for objects in object {
@@ -156,8 +159,16 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             self.collectionView.reloadData()
         }
         
-        loadImages(pageNumber: 3) // keep track of page number
-        collectionView.reloadData()
+        DispatchQueue.main.async {
+            if self.numberOfPages == nil {
+                self.loadImages(pageNumber: 3)
+            } else {
+                let randomPage = (arc4random_uniform(UInt32(self.numberOfPages! + 1)))
+                self.loadImages(pageNumber: Int(randomPage))
+            }
+            // keep track of page number
+            self.collectionView.reloadData()
+        }
     }
     
     
