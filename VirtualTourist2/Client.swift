@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import UIKit
 class Client: NSObject {
     
     let session = URLSession.shared
+    let stack = (UIApplication.shared.delegate as! AppDelegate).stack
     
-    func getImageFromFlickr(long: Double, lat: Double, page: Int, completionHandlerForGetImage: @escaping(_ success: Bool, _ photo: Bool , _ url: [String]?,_ pages: Int ,_ error: NSError?) -> Void) -> URLSessionDataTask {
+    func getImageFromFlickr(pin: Pin, long: Double, lat: Double, page: Int, completionHandlerForGetImage: @escaping(_ success: Bool, _ photo: Bool , _ url: [String]?,_ pages: Int ,_ error: NSError?) -> Void) -> URLSessionDataTask {
         
         let methodParameters = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.LocationPhotosMethod,

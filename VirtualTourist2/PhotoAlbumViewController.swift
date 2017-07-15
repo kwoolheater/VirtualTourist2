@@ -82,7 +82,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     func loadImages(pageNumber: Int) {
         SavedItems.sharedInstance().imageArray.removeAll()
-        Client.sharedInstance().getImageFromFlickr(long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!, page: pageNumber) { (success, photo, array, pages, error) in
+        Client.sharedInstance().getImageFromFlickr(pin: pin!, long: (annotation?.coordinate.longitude)!, lat: (annotation?.coordinate.latitude)!, page: pageNumber) { (success, photo, array, pages, error) in
             // Handle no photos at this location
             if success {
                 if photo {
@@ -136,15 +136,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         } else {
             object = fetchedObjects!
         }
-        self.stack.context.perform ({
+        DispatchQueue.main.async {
             
             for objects in object {
                 self.stack.context.delete(objects)
-                do {
-                    try self.stack.context.save()
-                } catch {
-                    print("error")
-                }
             }
             self.fetchedObjects?.removeAll()
             self.imageURLs.removeAll()
@@ -152,8 +147,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             SavedItems.sharedInstance().imageURLArray.removeAll()
             
             //save context
+            do {
+                try self.stack.context.save()
+            } catch {
+                print("error")
+            }
             //reload data
-        })
+            self.collectionView.reloadData()
+        }
         
         loadImages(pageNumber: 3) // keep track of page number
         collectionView.reloadData()
