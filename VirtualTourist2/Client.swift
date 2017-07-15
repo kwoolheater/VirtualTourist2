@@ -104,6 +104,8 @@ class Client: NSObject {
                 print(value)
             }
             
+            //main queue 
+            //create image entite without data
             completionHandlerForGetImage(true, false, imageArray, numberOfPages, nil)
         }
         

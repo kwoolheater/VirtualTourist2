@@ -108,16 +108,19 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             if downloadError != nil {
                 completionHandler(nil, "Could not download image \(imagePath)")
             } else {
-                SavedItems.sharedInstance().imageArray.append(data!)
-                let image = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
-                self.imageObjectArray.append(image)
+                //add to main queue
+                DispatchQueue.main.async {
+                    SavedItems.sharedInstance().imageArray.append(data!)
+                    let image = Image(pin: self.pin!, imageData: data! as NSData, context: self.stack.context)
+                    self.imageObjectArray.append(image)
                 
-                do {
-                    try self.stack.context.save()
-                } catch {
-                    print("error saving images in data")
+                    do {
+                        try self.stack.context.save()
+                    } catch {
+                        print("error saving images in data")
+                    }
+                    completionHandler(data, nil)
                 }
-                completionHandler(data, nil)
             }
         }
         task.resume()
@@ -148,28 +151,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             self.imageObjectArray.removeAll()
             SavedItems.sharedInstance().imageURLArray.removeAll()
             
+            //save context
+            //reload data
         })
         
-//        self.stack.context.perform({
-//            for object in self.fetchedObjects! {
-//                self.stack.context.delete(object)
-//            }
-//            
-//            do {
-//                try self.stack.context.save()
-//            } catch {
-//                print("Error.")
-//            }
-//            
-//            self.fetchedObjects?.removeAll()
-//            self.imageURLs.removeAll()
-//            self.imageObjectArray.removeAll()
-//            
-//            self.collectionView.reloadData()
-//        })
-        
-        
-        loadImages(pageNumber: 3)
+        loadImages(pageNumber: 3) // keep track of page number
         collectionView.reloadData()
     }
     
@@ -235,23 +221,27 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             object = fetchedObjects?[indexPath.row]
         }
         if database! {
-            fetchedObjects?.remove(at: indexPath.row)
-            stack.context.delete(object!)
-            do {
-                try stack.context.save()
-            } catch {
-                print("error saving")
+            DispatchQueue.main.async {
+                self.fetchedObjects?.remove(at: indexPath.row)
+                self.stack.context.delete(object!)
+                do {
+                    try self.stack.context.save()
+                } catch {
+                    print("error saving")
+                }
+                collectionView.reloadData()
             }
-            collectionView.reloadData()
         } else {
-            SavedItems.sharedInstance().imageURLArray.remove(at: indexPath.row)
-            stack.context.delete(object!)
-            do {
-                try stack.context.save()
-            } catch {
-                print("error saving")
+            DispatchQueue.main.async {
+                SavedItems.sharedInstance().imageURLArray.remove(at: indexPath.row)
+                self.stack.context.delete(object!)
+                do {
+                    try self.stack.context.save()
+                } catch {
+                    print("error saving")
+                }
+                collectionView.reloadData()
             }
-            collectionView.reloadData()
         }
     }
     
