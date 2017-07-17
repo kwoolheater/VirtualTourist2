@@ -123,13 +123,6 @@
                                     <outlet property="delegate" destination="i2f-OT-Uiu" id="CoH-5t-GnX"/>
                                 </connections>
                             </collectionView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KgP-XE-kLh">
-                                <rect key="frame" x="94" y="170" width="187" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -137,7 +130,6 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="ExX-r1-5ZO" id="CXO-NT-71y"/>
-                        <outlet property="label" destination="KgP-XE-kLh" id="UuV-BC-Dc8"/>
                         <outlet property="smallMap" destination="OBQ-ry-GhU" id="nNG-1O-oXY"/>
                     </connections>
                 </viewController>

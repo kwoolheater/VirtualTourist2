@@ -98,12 +98,10 @@ class Client: NSObject {
                 }
                 
                 imageArray.append(imageUrlString)
-                print(imageUrlString)
             }
             
             for value in imageArray {
                 SavedItems.sharedInstance().imageURLArray.append(value)
-                print(value)
             }
             
             //main queue 

@@ -21,6 +21,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     let stack = (UIApplication.shared.delegate as! AppDelegate).stack
     var fetchedObjects: [Image]?
     var numberOfPages: Int?
+    var count = 2
     
     lazy var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult> = {
         
@@ -36,8 +37,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
     }()
     
-    
-    
     @IBOutlet weak var smallMap: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var label: UILabel!
@@ -51,10 +50,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         SavedItems.sharedInstance().imageArray.removeAll()
         SavedItems.sharedInstance().imageURLArray.removeAll()
         
-        
+        // TODO disable button
         // add bar button item
         let barButton = UIBarButtonItem(title: "New Collection", style: .plain, target: self, action: #selector(newCollection))
         self.navigationItem.rightBarButtonItem = barButton
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         // Check if this pin has photos stored in Core Data.
         do {
@@ -76,8 +76,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         if fetchedObjects?.count == 0  {
             loadImages(pageNumber: 1)
             self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+            }
         } else {
             self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+            }
         }
     }
     
@@ -161,10 +167,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         DispatchQueue.main.async {
             if self.numberOfPages == nil {
-                self.loadImages(pageNumber: 3)
+                try? self.loadImages(pageNumber: self.count)
+                self.count += 1
             } else {
                 let randomPage = (arc4random_uniform(UInt32(self.numberOfPages! + 1)))
                 self.loadImages(pageNumber: Int(randomPage))
+                print(randomPage)
             }
             // keep track of page number
             self.collectionView.reloadData()
