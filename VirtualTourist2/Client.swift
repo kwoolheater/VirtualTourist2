@@ -79,10 +79,16 @@ class Client: NSObject {
             }
             
             /* GUARD: Are the "photos" and "photo" keys in our result? */
-            guard let photosDictionary = parsedResult[Constants.FlickrResponseKeys.Photos] as? [String:AnyObject], let numberOfPages = photosDictionary[Constants.FlickrParameterKeys.Pages] as? Int, let photoArray = photosDictionary[Constants.FlickrResponseKeys.Photo] as? [[String:AnyObject]] else {
+            guard let photosDictionary = parsedResult[Constants.FlickrResponseKeys.Photos] as? [String:AnyObject], var numberOfPages = photosDictionary[Constants.FlickrParameterKeys.Pages] as? Int, let photoArray = photosDictionary[Constants.FlickrResponseKeys.Photo] as? [[String:AnyObject]] else {
                 displayError("Cannot find keys '\(Constants.FlickrResponseKeys.Photos)' and '\(Constants.FlickrResponseKeys.Photo)' in \(parsedResult)")
                 return
             }
+            
+            print(numberOfPages)
+            
+            numberOfPages = min(numberOfPages,4000/18)
+            
+            print(numberOfPages)
             
             if numberOfPages == 0 {
                 completionHandlerForGetImage(true, true, nil, numberOfPages, nil)

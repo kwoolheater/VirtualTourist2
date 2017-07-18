@@ -172,7 +172,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             } else {
                 let randomPage = (arc4random_uniform(UInt32(self.numberOfPages! + 1)))
                 self.loadImages(pageNumber: Int(randomPage))
-                print(randomPage)
             }
             // keep track of page number
             self.collectionView.reloadData()
